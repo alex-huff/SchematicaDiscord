@@ -60,23 +60,23 @@ public class DiscordManager extends ListenerAdapter {
     private JavaPlugin plugin;
 
     public DiscordManager(String token, JavaPlugin plugin) {
+        this.plugin = plugin;
+        this.commands = new ArrayList<>();
+
+        this.commands.add(new CommandHelp(this.commands));
+        this.commands.add(new CommandLink());
 
         try {
-            this.commands = new ArrayList<>();
-
-            this.commands.add(new CommandHelp(this.commands));
-            this.commands.add(new CommandLink());
-
             this.jda = JDABuilder.create(token, intents).setActivity(
                 EntityBuilder.createActivity("!help", null, Activity.ActivityType.DEFAULT)
             ).disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS).build();
-
-            this.jda.addEventListener(this);
-
-            this.plugin = plugin;
         } catch (LoginException e) {
             e.printStackTrace();
         }
+    }
+
+    public void initialize() {
+        this.jda.addEventListener(this);
     }
 
     public synchronized static UUID getMinecraftFromDiscord(Long id) {

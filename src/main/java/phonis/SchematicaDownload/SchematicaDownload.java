@@ -59,6 +59,8 @@ public class SchematicaDownload extends JavaPlugin {
 
         if (SchematicaDownload.token != null) {
             this.dm = new DiscordManager(SchematicaDownload.token, this);
+
+            this.dm.initialize();
         } else {
             this.log.info("Token not specified, not starting Discord bot.");
         }
