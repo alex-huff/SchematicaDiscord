@@ -1,19 +1,42 @@
-plugins {
-    id 'java'
+buildscript {
+    repositories {
+        maven { url 'https://plugins.gradle.org/m2/' }
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
+    }
 }
 
-group 'org.example'
-version '1.0-SNAPSHOT'
-
-sourceCompatibility = 1.8
+group 'phonis'
+version '1.0'
 
 repositories {
     mavenCentral()
-    jcenter()
     maven { url 'https://jitpack.io' }
+    maven { url 'https://m2.dv8tion.net/releases' }
+    maven { url 'https://maven.enginehub.org/repo/' }
+    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
 }
 
 dependencies {
-    compile 'net.dv8tion:JDA:4.2.0_214'
-    compile 'com.github.taycaldwell:riot-api-java:4.3.0'
+    compile 'net.dv8tion:JDA:4.2.1_253'
+    compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.2.0-SNAPSHOT'
+    compileOnly 'org.bukkit:bukkit:1.15.2-R0.1-SNAPSHOT'
+}
+
+shadowJar {
+    archiveBaseName.set('SchematicaDiscord')
+    archiveVersion.set('')
+
+    from('src/main') {
+        include 'plugin.yml'
+    }
 }

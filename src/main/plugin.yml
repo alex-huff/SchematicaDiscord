@@ -1,5 +1,5 @@
-name: SchematicaDownload
-api-version: "1.7"
+name: SchematicaDiscord
+api-version: "1.17"
 depend: [WorldEdit]
 version: "2.0"
 description: Save and download schematicas with Discord

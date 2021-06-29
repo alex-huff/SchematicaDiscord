@@ -1,21 +1,24 @@
 package phonis.SchematicaDownload.util;
 
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.world.block.FuzzyBlockState;
+import org.bukkit.Material;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 public class PicStreamToClipboard implements ClipboardConverter {
 
-    private String args;
+    private final String args;
 
     public PicStreamToClipboard(String args) {
         this.args = args;
@@ -52,8 +55,10 @@ public class PicStreamToClipboard implements ClipboardConverter {
             if (dimensions.length == 3) {
                 if (dimensions[2].equalsIgnoreCase("wool")) {
                     palette = DitherBlockPalette.paletteWoolOnly;
-                } else if (dimensions[2].equalsIgnoreCase("clay")) {
-                    palette = DitherBlockPalette.paletteClayOnly;
+                } else if (dimensions[2].equalsIgnoreCase("concrete")) {
+                    palette = DitherBlockPalette.paletteConcreteOnly;
+                } else if (dimensions[2].equalsIgnoreCase("terracotta")) {
+                    palette = DitherBlockPalette.paletteTerracottaOnly;
                 } else {
                     throw new ClipboardException("Invalid palette.");
                 }
@@ -82,20 +87,26 @@ public class PicStreamToClipboard implements ClipboardConverter {
         int width = resized.getWidth();
         int height = resized.getHeight();
         int[][] dithered = this.getDitheredImage(resized, palette);
-        CuboidRegion region = new CuboidRegion(new Vector(0, 0, 0), new Vector(width - 1, 0, height - 1));
+        Material[] values = Material.values();
+        CuboidRegion region = new CuboidRegion(BlockVector3.at(0, 0, 0), BlockVector3.at(width - 1, 0, height - 1));
         BlockArrayClipboard bac = new BlockArrayClipboard(region);
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                int[] pal = palette[dithered[x][y]];
                 try {
                     bac.setBlock(
-                        new Vector(
+                        BlockVector3.at(
                             x,
                             0,
                             y
                         ),
-                        new BaseBlock(pal[0], pal[1])
+                        FuzzyBlockState.builder().type(
+                            Objects.requireNonNull(
+                                BukkitAdapter.asBlockType(
+                                    values[palette[dithered[x][y]][0]]
+                                )
+                            )
+                        ).build()
                     );
                 } catch (WorldEditException e) {
                     throw new ClipboardException("WorldEdit exception.");
@@ -115,6 +126,7 @@ public class PicStreamToClipboard implements ClipboardConverter {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 int p = resized.getRGB(x, y);
+                // int a = (p >> 24) & 0xff;
                 int r = (p >> 16) & 0xff;
                 int g = (p >> 8) & 0xff;
                 int b = p & 0xff;
@@ -129,9 +141,9 @@ public class PicStreamToClipboard implements ClipboardConverter {
                 int best = this.getClosest(current, palette);
                 dithered[x][y] = best;
                 DitherColor bestColor = new DitherColor(
+                    palette[best][1],
                     palette[best][2],
-                    palette[best][3],
-                    palette[best][4]
+                    palette[best][3]
                 );
                 double[] error = this.getDifference(current, bestColor);
 
@@ -170,9 +182,9 @@ public class PicStreamToClipboard implements ClipboardConverter {
 
         for (int i = 0; i < palette.length; i++) {
             double heuristic =
-                Math.pow(color.getR() - palette[i][2], 2) +
-                    Math.pow(color.getG() - palette[i][3], 2) +
-                    Math.pow(color.getB() - palette[i][4], 2);
+                Math.pow(color.getR() - palette[i][1], 2) +
+                    Math.pow(color.getG() - palette[i][2], 2) +
+                    Math.pow(color.getB() - palette[i][3], 2);
 
             if (heuristic < closest) {
                 closest = heuristic;
@@ -192,4 +204,5 @@ public class PicStreamToClipboard implements ClipboardConverter {
     }
 
 }
+
 

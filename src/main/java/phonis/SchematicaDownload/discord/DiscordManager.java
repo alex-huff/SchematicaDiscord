@@ -4,7 +4,6 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.world.registry.LegacyWorldData;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.*;
@@ -214,7 +213,7 @@ public class DiscordManager extends ListenerAdapter {
         LocalSession session = wep.getSession(player);
         String dims = clipboard.getDimensions().toString();
 
-        session.setClipboard(new ClipboardHolder(clipboard, LegacyWorldData.getInstance()));
+        session.setClipboard(new ClipboardHolder(clipboard));
         player.sendMessage(ChatColor.GREEN + "Loaded to clipboard. " + dims);
         event.getChannel().sendMessage("Loaded to clipboard. " + dims).queue();
 

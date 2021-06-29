@@ -4,9 +4,8 @@ import com.sk89q.worldedit.EmptyClipboardException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
-import com.sk89q.worldedit.world.registry.WorldData;
 import net.dv8tion.jda.api.JDA;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -87,23 +86,21 @@ public class CommandSave extends SubCommand {
         ClipboardWriter writer;
 
         try {
-            writer = ClipboardFormat.SCHEMATIC.getWriter(baos);
+            writer = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(baos);
         } catch (IOException e) {
             throw new CommandException("IOException creating schematica.");
         }
 
         Clipboard clipboard;
-        WorldData worldData;
 
         try {
             clipboard = session.getClipboard().getClipboard();
-            worldData = session.getClipboard().getWorldData();
         } catch (EmptyClipboardException e) {
             throw new CommandException("Empty clipboard.");
         }
 
         try {
-            writer.write(clipboard, worldData);
+            writer.write(clipboard);
             writer.close();
         } catch (IOException e) {
             throw new CommandException("IOException saving schematica.");
@@ -112,7 +109,7 @@ public class CommandSave extends SubCommand {
         try {
             this.jda.retrieveUserById(dID).queue(
                 user -> user.openPrivateChannel().queue(
-                    privateChannel -> privateChannel.sendFile(new ByteArrayInputStream(baos.toByteArray()), args[0] + ".schematic").queue()
+                    privateChannel -> privateChannel.sendFile(new ByteArrayInputStream(baos.toByteArray()), args[0] + ".schem").queue()
                 )
             );
         } catch (NullPointerException e) {

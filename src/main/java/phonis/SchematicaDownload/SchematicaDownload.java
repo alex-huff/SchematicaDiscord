@@ -26,21 +26,21 @@ public class SchematicaDownload extends JavaPlugin {
 
         if (!f.exists()) {
             if (f.mkdirs()) {
-                log.info("Creating directory: " + SchematicaDownload.path + ".");
-                log.info("Creating token file.");
+                this.log.info("Creating directory: " + SchematicaDownload.path + ".");
+                this.log.info("Creating token file.");
 
                 try {
                     this.createDefaultTokenFile();
                 } catch (IOException e) {
-                    log.warning("Could not create token file.");
+                    this.log.warning("Could not create token file.");
                 }
 
-                log.info("Creating link file.");
+                this.log.info("Creating link file.");
 
                 try {
                     this.createDefaultLinkFile();
                 } catch (IOException e) {
-                    log.warning("Could not create link file.");
+                    this.log.warning("Could not create link file.");
                 }
             }
         } else {
