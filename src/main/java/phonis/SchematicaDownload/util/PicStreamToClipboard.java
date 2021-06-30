@@ -103,7 +103,7 @@ public class PicStreamToClipboard implements ClipboardConverter {
                         FuzzyBlockState.builder().type(
                             Objects.requireNonNull(
                                 BukkitAdapter.asBlockType(
-                                    values[palette[dithered[x][y]][0]]
+                                    values[dithered[x][y] == -1 ? Material.AIR.ordinal() : palette[dithered[x][y]][0]]
                                 )
                             )
                         ).build()
@@ -117,27 +117,51 @@ public class PicStreamToClipboard implements ClipboardConverter {
         return bac;
     }
 
+    private DitherColor RGBAtoRGB(int r, int g, int b, int a) {
+        // black background
+        int br = 0;
+        int bg = 0;
+        int bb = 0;
+        double alpha = a / 255d;
+
+        if (alpha <= .8d) return null;
+
+        return new DitherColor(
+            (1 - alpha) * br + alpha * r,
+            (1 - alpha) * bg + alpha * g,
+            (1 - alpha) * bb + alpha * b
+        );
+    }
+
     private int[][] getDitheredImage(BufferedImage resized, int[][] palette) {
         int width = resized.getWidth();
         int height = resized.getHeight();
         DitherColor[][] imageArray = new DitherColor[width][height];
         int[][] dithered = new int[width][height];
+        boolean hasAlpha = resized.getColorModel().hasAlpha();
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 int p = resized.getRGB(x, y);
-                // int a = (p >> 24) & 0xff;
+                int a = hasAlpha ? (p >> 24) & 0xff : 255;
                 int r = (p >> 16) & 0xff;
                 int g = (p >> 8) & 0xff;
                 int b = p & 0xff;
 
-                imageArray[x][y] = new DitherColor(r, g, b);
+                imageArray[x][y] = !hasAlpha ? new DitherColor(r, g, b) : this.RGBAtoRGB(r, g, b, a);
             }
         }
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 DitherColor current = imageArray[x][y];
+
+                if (current == null) {
+                    dithered[x][y] = -1;
+
+                    continue;
+                }
+
                 int best = this.getClosest(current, palette);
                 dithered[x][y] = best;
                 DitherColor bestColor = new DitherColor(
@@ -147,24 +171,26 @@ public class PicStreamToClipboard implements ClipboardConverter {
                 );
                 double[] error = this.getDifference(current, bestColor);
 
-                if (x + 1 < width) {
+                if (x + 1 < width && imageArray[x + 1][y] != null) {
                     imageArray[x + 1][y].addR(error[0] * 7.0 / 16);
                     imageArray[x + 1][y].addG(error[1] * 7.0 / 16);
                     imageArray[x + 1][y].addB(error[2] * 7.0 / 16);
                 }
 
                 if (y + 1 < height) {
-                    if (x - 1 > 0) {
+                    if (x - 1 > 0 && imageArray[x - 1][y + 1] != null) {
                         imageArray[x - 1][y + 1].addR(error[0] * 3.0 / 16);
                         imageArray[x - 1][y + 1].addG(error[1] * 3.0 / 16);
                         imageArray[x - 1][y + 1].addB(error[2] * 3.0 / 16);
                     }
 
-                    imageArray[x][y + 1].addR(error[0] * 5.0 / 16);
-                    imageArray[x][y + 1].addG(error[1] * 5.0 / 16);
-                    imageArray[x][y + 1].addB(error[2] * 5.0 / 16);
+                    if (imageArray[x][y + 1] != null) {
+                        imageArray[x][y + 1].addR(error[0] * 5.0 / 16);
+                        imageArray[x][y + 1].addG(error[1] * 5.0 / 16);
+                        imageArray[x][y + 1].addB(error[2] * 5.0 / 16);
+                    }
 
-                    if (x + 1 < width) {
+                    if (x + 1 < width && imageArray[x + 1][y + 1] != null) {
                         imageArray[x + 1][y + 1].addR(error[0] * 1.0 / 16);
                         imageArray[x + 1][y + 1].addG(error[1] * 1.0 / 16);
                         imageArray[x + 1][y + 1].addB(error[2] * 1.0 / 16);
