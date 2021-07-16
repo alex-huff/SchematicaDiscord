@@ -49,8 +49,8 @@ public class DiscordManager extends ListenerAdapter {
         intents.add(GatewayIntent.GUILD_MESSAGES);
         intents.add(GatewayIntent.GUILD_MESSAGE_REACTIONS);
         intents.add(GatewayIntent.GUILD_MESSAGE_TYPING);
-        //intents.add(GatewayIntent.GUILD_PRESENCES);
-        //intents.add(GatewayIntent.GUILD_MEMBERS);
+        // intents.add(GatewayIntent.GUILD_PRESENCES);
+        // intents.add(GatewayIntent.GUILD_MEMBERS);
 
         linkSession = new HashMap<>();
         minecraftDiscordMap = new DualHashBidiMap<>();
