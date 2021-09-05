@@ -4,11 +4,11 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
+        classpath 'gradle.plugin.com.github.jengelman.gradle.plugins:shadow:7.0.0'
     }
 }
 
-group 'phonis'
+group 'dev.phonis'
 version '1.0'
 
 repositories {
@@ -21,19 +21,21 @@ repositories {
 
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
+apply plugin: 'java-library'
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
 dependencies {
-    compile 'net.dv8tion:JDA:4.2.1_253'
-    compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.2.0-SNAPSHOT'
-    compileOnly 'org.bukkit:bukkit:1.15.2-R0.1-SNAPSHOT'
+    implementation 'net.dv8tion:JDA:4.2.1_253'
+    compileClasspath 'com.sk89q.worldedit:worldedit-bukkit:7.2.0-SNAPSHOT'
+    compileClasspath 'org.bukkit:bukkit:1.15.2-R0.1-SNAPSHOT'
 }
 
 shadowJar {
     archiveBaseName.set('SchematicaDiscord')
+    archiveClassifier.set('')
     archiveVersion.set('')
 
     from('src/main') {
