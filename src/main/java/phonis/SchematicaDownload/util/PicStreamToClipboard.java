@@ -82,6 +82,10 @@ public class PicStreamToClipboard implements ClipboardConverter
                 {
                     palette = DitherBlockPalette.paletteWoolAndConcrete;
                 }
+                else if (dimensions[2].equalsIgnoreCase("all"))
+                {
+                    palette = DitherBlockPalette.palette;
+                }
                 else
                 {
                     throw new ClipboardException("Invalid palette.");
