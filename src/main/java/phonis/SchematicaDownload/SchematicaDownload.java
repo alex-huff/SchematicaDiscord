@@ -9,59 +9,80 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-public class SchematicaDownload extends JavaPlugin {
+public class SchematicaDownload extends JavaPlugin
+{
 
-    public static final String path = "plugins/SchematicaDownload/";
+    public static final String path      = "plugins/SchematicaDownload/";
     public static final String tokenPath = SchematicaDownload.path + "token.txt";
-    public static final String linkPath = SchematicaDownload.path + "link.txt";
-    public static String token = null;
+    public static final String linkPath  = SchematicaDownload.path + "link.txt";
+    public static       String token     = null;
 
-    private Logger log;
-    public DiscordManager dm;
+    private Logger         log;
+    public  DiscordManager dm;
 
     @Override
-    public void onEnable() {
+    public void onEnable()
+    {
         this.log = getLogger();
         File f = new File(SchematicaDownload.path);
 
-        if (!f.exists()) {
-            if (f.mkdirs()) {
+        if (!f.exists())
+        {
+            if (f.mkdirs())
+            {
                 this.log.info("Creating directory: " + SchematicaDownload.path + ".");
                 this.log.info("Creating token file.");
 
-                try {
+                try
+                {
                     this.createDefaultTokenFile();
-                } catch (IOException e) {
+                }
+                catch (IOException e)
+                {
                     this.log.warning("Could not create token file.");
                 }
 
                 this.log.info("Creating link file.");
 
-                try {
+                try
+                {
                     this.createDefaultLinkFile();
-                } catch (IOException e) {
+                }
+                catch (IOException e)
+                {
                     this.log.warning("Could not create link file.");
                 }
             }
-        } else {
-            try {
+        }
+        else
+        {
+            try
+            {
                 this.loadToken();
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
                 this.log.info("IOException while loading token.");
             }
 
-            try {
+            try
+            {
                 this.loadLinks();
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
                 this.log.info("IOException while loading links.");
             }
         }
 
-        if (SchematicaDownload.token != null) {
+        if (SchematicaDownload.token != null)
+        {
             this.dm = new DiscordManager(SchematicaDownload.token, this);
 
             this.dm.initialize();
-        } else {
+        }
+        else
+        {
             this.log.info("Token not specified, not starting Discord bot.");
         }
 
@@ -71,44 +92,54 @@ public class SchematicaDownload extends JavaPlugin {
     }
 
     @Override
-    public void onDisable() {
-        if (this.dm != null && this.dm.jda != null) {
+    public void onDisable()
+    {
+        if (this.dm != null && this.dm.jda != null)
+        {
             this.dm.jda.shutdownNow();
         }
 
-        try {
+        try
+        {
             this.saveLinks();
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             this.log.severe("Failed to save links.");
         }
 
         this.log.info("SchematicaDownload disable finished.");
     }
 
-    private void createDefaultTokenFile() throws IOException {
+    private void createDefaultTokenFile() throws IOException
+    {
         File file = new File(SchematicaDownload.tokenPath);
 
         file.createNewFile();
     }
 
-    private void createDefaultLinkFile() throws IOException {
+    private void createDefaultLinkFile() throws IOException
+    {
         File file = new File(SchematicaDownload.linkPath);
 
         file.createNewFile();
     }
 
-    private void loadToken() throws IOException {
+    private void loadToken() throws IOException
+    {
         BufferedReader reader = new BufferedReader(new FileReader(SchematicaDownload.tokenPath));
         SchematicaDownload.token = reader.readLine();
 
         reader.close();
     }
 
-    private void loadLinks() throws IOException {
+    private void loadLinks() throws IOException
+    {
         BufferedReader reader = new BufferedReader(new FileReader(SchematicaDownload.linkPath));
-        String line;
+        String         line;
 
-        while ((line = reader.readLine()) != null) {
+        while ((line = reader.readLine()) != null)
+        {
             String[] link = line.split(" ");
 
             DiscordManager.putLink(UUID.fromString(link[0]), Long.parseLong(link[1]));
@@ -117,10 +148,12 @@ public class SchematicaDownload extends JavaPlugin {
         reader.close();
     }
 
-    private void saveLinks() throws IOException {
+    private void saveLinks() throws IOException
+    {
         BufferedWriter writer = new BufferedWriter(new FileWriter(SchematicaDownload.linkPath));
 
-        for (Map.Entry<UUID, Long> entry : DiscordManager.getLinks()) {
+        for (Map.Entry<UUID, Long> entry : DiscordManager.getLinks())
+        {
             writer.write(entry.getKey().toString());
             writer.write(' ');
             writer.write(entry.getValue().toString());

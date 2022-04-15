@@ -8,26 +8,34 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class SchemStreamToClipboard implements ClipboardConverter {
+public class SchemStreamToClipboard implements ClipboardConverter
+{
 
     @Override
-    public Clipboard getClipboard(InputStream stream) throws ClipboardException {
+    public Clipboard getClipboard(InputStream stream) throws ClipboardException
+    {
         ClipboardFormat format = BuiltInClipboardFormat.SPONGE_SCHEMATIC;
         ClipboardReader reader;
 
-        try {
+        try
+        {
             reader = format.getReader(stream);
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             throw new ClipboardException("IOException during loading of schematic.");
         }
 
         Clipboard clipboard;
 
-        try {
+        try
+        {
             clipboard = reader.read();
 
             stream.close();
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             throw new ClipboardException("IOException during load to clipboard.");
         }
 

@@ -6,9 +6,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
-public class CommandPSchem extends SubCommand {
+public class CommandPSchem extends SubCommand
+{
 
-    public CommandPSchem(JavaPlugin plugin) {
+    public CommandPSchem(JavaPlugin plugin)
+    {
         super("pschem");
         SubCommand.registerCommand(plugin, this);
         this.addSubCommand(new CommandSave(plugin));
@@ -16,17 +18,20 @@ public class CommandPSchem extends SubCommand {
     }
 
     @Override
-    public List<String> topTabComplete(CommandSender sender, String[] args) {
+    public List<String> topTabComplete(CommandSender sender, String[] args)
+    {
         return null;
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args)
+    {
         sender.sendMessage(this.getCommandString(0));
     }
 
     @Override
-    public void execute(Player player, String[] args) {
+    public void execute(Player player, String[] args)
+    {
         this.execute((CommandSender) player, args);
     }
 

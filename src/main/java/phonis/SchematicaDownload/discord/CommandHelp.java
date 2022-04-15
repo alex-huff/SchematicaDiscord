@@ -6,11 +6,13 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommandHelp extends DiscordCommand {
+public class CommandHelp extends DiscordCommand
+{
 
     private List<DiscordCommand> commands;
 
-    public CommandHelp(List<DiscordCommand> commands) {
+    public CommandHelp(List<DiscordCommand> commands)
+    {
         super(
             "help",
             "List all the commands with info about them.",
@@ -23,23 +25,29 @@ public class CommandHelp extends DiscordCommand {
     }
 
     @Override
-    public void handleCommand(MessageReceivedEvent receivedEvent, String[] args) {
+    public void handleCommand(MessageReceivedEvent receivedEvent, String[] args)
+    {
         List<MessageEmbed.Field> fields = new ArrayList<>();
 
-        for (DiscordCommand command : this.commands) {
+        for (DiscordCommand command : this.commands)
+        {
             StringBuilder infoBuilder = new StringBuilder();
 
             infoBuilder
                 .append(command.getHint()).append("\n");
 
-            if (command.getArgs() != null) {
-                infoBuilder.append("Args: ").append(DiscordManager.inlineCodeBlock(command.getArgs().split(" "))).append("\n");
+            if (command.getArgs() != null)
+            {
+                infoBuilder.append("Args: ").append(DiscordManager.inlineCodeBlock(command.getArgs().split(" ")))
+                           .append("\n");
             }
 
-            if (command.getAliases().size() > 0) {
+            if (command.getAliases().size() > 0)
+            {
                 infoBuilder.append("Aliases: ");
 
-                for (String alias : command.getAliases()) {
+                for (String alias : command.getAliases())
+                {
                     infoBuilder.append(DiscordManager.inlineCodeBlock(alias)).append(" ");
                 }
             }

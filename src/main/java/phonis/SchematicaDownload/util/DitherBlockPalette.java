@@ -2,7 +2,8 @@ package phonis.SchematicaDownload.util;
 
 import org.bukkit.Material;
 
-public class DitherBlockPalette {
+public class DitherBlockPalette
+{
 
     public static int[][] palette = new int[][]{
         {Material.WHITE_TERRACOTTA.ordinal(), 210, 178, 161},
@@ -72,7 +73,7 @@ public class DitherBlockPalette {
         {Material.BROWN_WOOL.ordinal(), 114, 72, 41},
         {Material.GREEN_WOOL.ordinal(), 85, 110, 28},
         {Material.RED_WOOL.ordinal(), 161, 39, 35},
-        {Material.BLACK_WOOL.ordinal(), 21, 21, 26},
+        {Material.BLACK_WOOL.ordinal(), 21, 21, 26}
     };
 
     public static int[][] paletteConcreteOnly = new int[][]{
@@ -111,7 +112,42 @@ public class DitherBlockPalette {
         {Material.GREEN_TERRACOTTA.ordinal(), 76, 83, 42},
         {Material.RED_TERRACOTTA.ordinal(), 143, 61, 47},
         {Material.BLACK_TERRACOTTA.ordinal(), 37, 23, 16},
-        {Material.TERRACOTTA.ordinal(), 152, 94, 68},
+        {Material.TERRACOTTA.ordinal(), 152, 94, 68}
+    };
+
+    public static int[][] paletteWoolAndConcrete = new int[][]{
+        {Material.WHITE_WOOL.ordinal(), 234, 236, 237},
+        {Material.ORANGE_WOOL.ordinal(), 241, 118, 20},
+        {Material.MAGENTA_WOOL.ordinal(), 190, 69, 180},
+        {Material.LIGHT_BLUE_WOOL.ordinal(), 58, 175, 217},
+        {Material.YELLOW_WOOL.ordinal(), 249, 198, 40},
+        {Material.LIME_WOOL.ordinal(), 112, 185, 26},
+        {Material.PINK_WOOL.ordinal(), 238, 141, 172},
+        {Material.GRAY_WOOL.ordinal(), 63, 68, 72},
+        {Material.LIGHT_GRAY_WOOL.ordinal(), 142, 142, 135},
+        {Material.CYAN_WOOL.ordinal(), 21, 138, 145},
+        {Material.PURPLE_WOOL.ordinal(), 122, 42, 173},
+        {Material.BLUE_WOOL.ordinal(), 53, 57, 157},
+        {Material.BROWN_WOOL.ordinal(), 114, 72, 41},
+        {Material.GREEN_WOOL.ordinal(), 85, 110, 28},
+        {Material.RED_WOOL.ordinal(), 161, 39, 35},
+        {Material.BLACK_WOOL.ordinal(), 21, 21, 26},
+        {Material.WHITE_CONCRETE.ordinal(), 207, 213, 214},
+        {Material.ORANGE_CONCRETE.ordinal(), 224, 97, 1},
+        {Material.MAGENTA_CONCRETE.ordinal(), 169, 48, 159},
+        {Material.LIGHT_BLUE_CONCRETE.ordinal(), 36, 137, 199},
+        {Material.YELLOW_CONCRETE.ordinal(), 241, 175, 21},
+        {Material.LIME_CONCRETE.ordinal(), 94, 169, 24},
+        {Material.PINK_CONCRETE.ordinal(), 214, 101, 143},
+        {Material.GRAY_CONCRETE.ordinal(), 55, 58, 62},
+        {Material.LIGHT_GRAY_CONCRETE.ordinal(), 125, 125, 115},
+        {Material.CYAN_CONCRETE.ordinal(), 21, 119, 136},
+        {Material.PURPLE_CONCRETE.ordinal(), 100, 32, 156},
+        {Material.BLUE_CONCRETE.ordinal(), 45, 47, 143},
+        {Material.BROWN_CONCRETE.ordinal(), 96, 60, 32},
+        {Material.GREEN_CONCRETE.ordinal(), 73, 91, 36},
+        {Material.RED_CONCRETE.ordinal(), 142, 33, 33},
+        {Material.BLACK_CONCRETE.ordinal(), 8, 10, 15}
     };
 
 }

@@ -18,12 +18,14 @@ import phonis.SchematicaDownload.discord.DiscordManager;
 import java.io.*;
 import java.util.List;
 
-public class CommandSave extends SubCommand {
+public class CommandSave extends SubCommand
+{
 
-    private JDA jda;
+    private JDA     jda;
     private boolean enabled = true;
 
-    public CommandSave(JavaPlugin plugin) {
+    public CommandSave(JavaPlugin plugin)
+    {
         super(
             "save",
             "(Name)"
@@ -31,36 +33,45 @@ public class CommandSave extends SubCommand {
 
         SchematicaDownload di = null;
 
-        if (plugin instanceof SchematicaDownload) {
+        if (plugin instanceof SchematicaDownload)
+        {
             di = (SchematicaDownload) plugin;
         }
 
-        if (di == null || di.dm == null || di.dm.jda == null) {
+        if (di == null || di.dm == null || di.dm.jda == null)
+        {
             this.enabled = false;
-        } else {
+        }
+        else
+        {
             this.jda = di.dm.jda;
         }
     }
 
     @Override
-    public List<String> topTabComplete(CommandSender sender, String[] args) {
+    public List<String> topTabComplete(CommandSender sender, String[] args)
+    {
         return null;
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) throws CommandException {
+    public void execute(CommandSender sender, String[] args) throws CommandException
+    {
         throw CommandException.consoleError;
     }
 
     @Override
-    public void execute(Player player, String[] args) throws CommandException {
-        if (!this.enabled) {
+    public void execute(Player player, String[] args) throws CommandException
+    {
+        if (!this.enabled)
+        {
             player.sendMessage("Discord not loaded.");
 
             return;
         }
 
-        if (args.length < 1) {
+        if (args.length < 1)
+        {
             player.sendMessage(this.getCommandString(0));
 
             return;
@@ -68,51 +79,68 @@ public class CommandSave extends SubCommand {
 
         Long dID = DiscordManager.getDiscordFromMinecraft(player.getUniqueId());
 
-        if (dID == null) {
+        if (dID == null)
+        {
             throw new CommandException("You must link your Discord to Minecraft first.");
         }
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldEdit");
-        WorldEditPlugin wep;
+        ByteArrayOutputStream baos   = new ByteArrayOutputStream();
+        Plugin                plugin = Bukkit.getPluginManager().getPlugin("WorldEdit");
+        WorldEditPlugin       wep;
 
-        if (plugin instanceof WorldEditPlugin) {
+        if (plugin instanceof WorldEditPlugin)
+        {
             wep = (WorldEditPlugin) plugin;
-        } else {
+        }
+        else
+        {
             throw new CommandException("Invalid WorldEdit.");
         }
 
-        LocalSession session = wep.getSession(player);
+        LocalSession    session = wep.getSession(player);
         ClipboardWriter writer;
 
-        try {
+        try
+        {
             writer = BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(baos);
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             throw new CommandException("IOException creating schematica.");
         }
 
         Clipboard clipboard;
 
-        try {
+        try
+        {
             clipboard = session.getClipboard().getClipboard();
-        } catch (EmptyClipboardException e) {
+        }
+        catch (EmptyClipboardException e)
+        {
             throw new CommandException("Empty clipboard.");
         }
 
-        try {
+        try
+        {
             writer.write(clipboard);
             writer.close();
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             throw new CommandException("IOException saving schematica.");
         }
 
-        try {
+        try
+        {
             this.jda.retrieveUserById(dID).queue(
                 user -> user.openPrivateChannel().queue(
-                    privateChannel -> privateChannel.sendFile(new ByteArrayInputStream(baos.toByteArray()), args[0] + ".schem").queue()
+                    privateChannel -> privateChannel
+                        .sendFile(new ByteArrayInputStream(baos.toByteArray()), args[0] + ".schem").queue()
                 )
             );
-        } catch (NullPointerException e) {
+        }
+        catch (NullPointerException e)
+        {
             throw new CommandException("Invalid Discord or not in a server with the bot. Consider re-linking");
         }
 

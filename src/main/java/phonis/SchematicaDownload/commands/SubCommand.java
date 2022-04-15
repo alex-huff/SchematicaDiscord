@@ -11,25 +11,29 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public abstract class SubCommand implements CommandExecutor, TabCompleter {
+public abstract class SubCommand implements CommandExecutor, TabCompleter
+{
 
-    private final String name;
-    private final String hint;
-    private Set<String> args = new HashSet<>();
-    private Set<SubCommand> subCommands = new HashSet<>();
-    private Set<String> aliases = new HashSet<>();
+    private final String          name;
+    private final String          hint;
+    private       Set<String>     args        = new HashSet<>();
+    private       Set<SubCommand> subCommands = new HashSet<>();
+    private       Set<String>     aliases     = new HashSet<>();
 
-    public SubCommand(String name, String hint) {
+    public SubCommand(String name, String hint)
+    {
         this.name = name;
         this.hint = hint;
     }
 
-    public SubCommand(String name) {
+    public SubCommand(String name)
+    {
         this.name = name;
         this.hint = "";
     }
 
-    private static String[] truncate(String[] strings) {
+    private static String[] truncate(String[] strings)
+    {
         String[] ret = new String[strings.length - 1];
 
         System.arraycopy(strings, 1, ret, 0, strings.length - 1);
@@ -37,15 +41,18 @@ public abstract class SubCommand implements CommandExecutor, TabCompleter {
         return ret;
     }
 
-    private static String[] arrayToLower(String[] strings) {
-        for (int i = 0; i < strings.length; i++) {
+    private static String[] arrayToLower(String[] strings)
+    {
+        for (int i = 0; i < strings.length; i++)
+        {
             strings[i] = strings[i].toLowerCase();
         }
 
         return strings;
     }
 
-    public static void registerCommand(JavaPlugin plugin, SubCommand etc) {
+    public static void registerCommand(JavaPlugin plugin, SubCommand etc)
+    {
         PluginCommand pc = plugin.getCommand(etc.getName());
 
         if (pc == null) return;
@@ -54,31 +61,43 @@ public abstract class SubCommand implements CommandExecutor, TabCompleter {
         pc.setTabCompleter(etc);
     }
 
-    public static double parseDouble(String arg) throws CommandException {
-        try {
+    public static double parseDouble(String arg) throws CommandException
+    {
+        try
+        {
             return Double.parseDouble(arg);
-        } catch (NumberFormatException e) {
+        }
+        catch (NumberFormatException e)
+        {
             throw new CommandException("Invalid double ➤ " + arg);
         }
     }
 
-    public static int parseInt(String arg) throws CommandException {
-        try {
+    public static int parseInt(String arg) throws CommandException
+    {
+        try
+        {
             return Integer.parseInt(arg);
-        } catch (NumberFormatException e) {
+        }
+        catch (NumberFormatException e)
+        {
             throw new CommandException("Invalid int ➤ " + arg);
         }
     }
 
-    public List<String> argsAutocomplete(String[] args, int size) {
+    public List<String> argsAutocomplete(String[] args, int size)
+    {
         List<String> ret = new ArrayList<>();
 
-        if (args.length > size) {
+        if (args.length > size)
+        {
             return ret;
         }
 
-        for (String arg : this.args) {
-            if (arg.startsWith(args[args.length - 1])) {
+        for (String arg : this.args)
+        {
+            if (arg.startsWith(args[args.length - 1]))
+            {
                 ret.add(arg);
             }
         }
@@ -88,12 +107,16 @@ public abstract class SubCommand implements CommandExecutor, TabCompleter {
 
     public abstract List<String> topTabComplete(CommandSender sender, String[] args);
 
-    public List<String> tabComplete(CommandSender sender, String label, String[] args) {
+    public List<String> tabComplete(CommandSender sender, String label, String[] args)
+    {
         List<String> ret = new ArrayList<>();
 
-        if (args.length > 0) {
-            for (SubCommand subETC : this.subCommands) {
-                if (args[0].equalsIgnoreCase(subETC.getName()) || subETC.getAliases().contains(args[0])) {
+        if (args.length > 0)
+        {
+            for (SubCommand subETC : this.subCommands)
+            {
+                if (args[0].equalsIgnoreCase(subETC.getName()) || subETC.getAliases().contains(args[0]))
+                {
                     return subETC.tabComplete(sender, args[0], SubCommand.truncate(args));
                 }
             }
@@ -104,7 +127,8 @@ public abstract class SubCommand implements CommandExecutor, TabCompleter {
 
             if (args.length > 1) return ret;
 
-            for (SubCommand subETC : this.subCommands) {
+            for (SubCommand subETC : this.subCommands)
+            {
                 String subName = subETC.getName();
 
                 if (subName.startsWith(args[0])) ret.add(subName);
@@ -122,10 +146,14 @@ public abstract class SubCommand implements CommandExecutor, TabCompleter {
 
     public abstract void execute(Player player, String[] args) throws CommandException;
 
-    public void executeTree(CommandSender sender, String[] args) throws CommandException {
-        if (args.length > 0) {
-            for (SubCommand subETC : this.subCommands) {
-                if (args[0].equalsIgnoreCase(subETC.getName()) || subETC.getAliases().contains(args[0])) {
+    public void executeTree(CommandSender sender, String[] args) throws CommandException
+    {
+        if (args.length > 0)
+        {
+            for (SubCommand subETC : this.subCommands)
+            {
+                if (args[0].equalsIgnoreCase(subETC.getName()) || subETC.getAliases().contains(args[0]))
+                {
                     subETC.executeTree(sender, truncate(args));
 
                     return;
@@ -133,70 +161,93 @@ public abstract class SubCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        if (sender instanceof Player) {
+        if (sender instanceof Player)
+        {
             execute((Player) sender, args);
-        } else {
+        }
+        else
+        {
             execute(sender, args);
         }
     }
 
     @Override
-    public List<String> onTabComplete(@Nonnull CommandSender sender, @Nonnull Command cmd, @Nonnull String alias, @Nonnull String[] args) {
+    public List<String> onTabComplete(
+        @Nonnull CommandSender sender, @Nonnull Command cmd, @Nonnull String alias, @Nonnull String[] args
+    )
+    {
         return this.tabComplete(sender, alias, SubCommand.arrayToLower(args));
     }
 
     @Override
-    public boolean onCommand(@Nonnull CommandSender sender, @Nonnull Command cmd, @Nonnull String label, @Nonnull String[] args) {
-        try {
+    public boolean onCommand(
+        @Nonnull CommandSender sender, @Nonnull Command cmd, @Nonnull String label, @Nonnull String[] args
+    )
+    {
+        try
+        {
             this.executeTree(sender, SubCommand.arrayToLower(args));
-        } catch (CommandException e) {
+        }
+        catch (CommandException e)
+        {
             sender.sendMessage(e.getMessage());
         }
 
         return true;
     }
 
-    public void addSubCommand(SubCommand subETC) {
+    public void addSubCommand(SubCommand subETC)
+    {
         this.subCommands.add(subETC);
     }
 
-    public void addAlias(String alias) {
+    public void addAlias(String alias)
+    {
         this.aliases.add(alias.toLowerCase());
     }
 
-    public void addArg(String arg) {
+    public void addArg(String arg)
+    {
         this.args.add(arg);
     }
 
-    private Set<String> getAliases() {
+    private Set<String> getAliases()
+    {
         return this.aliases;
     }
 
-    public String getName() {
+    public String getName()
+    {
         return this.name;
     }
 
-    public String getHint() {
+    public String getHint()
+    {
         return this.hint;
     }
 
-    public String getCommandString(int depth) {
+    public String getCommandString(int depth)
+    {
         StringBuilder message = new StringBuilder();
 
         for (int i = 0; i < depth; i++) message.append("   ");
 
-        String name = "" + ChatColor.RESET + ChatColor.AQUA + this.getName() + " " + ChatColor.GRAY + this.getHint() + "\n";
+        String name = "" + ChatColor.RESET + ChatColor.AQUA + this.getName() + " " + ChatColor.GRAY + this.getHint() +
+                      "\n";
         message.append(name);
 
         depth += 1;
 
-        for (String arg : this.args) {
+        for (String arg : this.args)
+        {
             for (int i = 0; i < depth; i++) message.append("   ");
             message.append(arg).append("\n");
         }
 
-        if (!this.subCommands.isEmpty()) {
-            for (SubCommand etc : this.subCommands) {
+        if (!this.subCommands.isEmpty())
+        {
+            for (SubCommand etc : this.subCommands)
+            {
                 message.append(etc.getCommandString(depth));
             }
         }

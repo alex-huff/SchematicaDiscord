@@ -28,14 +28,16 @@ import javax.security.auth.login.LoginException;
 import java.io.InputStream;
 import java.util.*;
 
-public class DiscordManager extends ListenerAdapter {
+public class DiscordManager extends ListenerAdapter
+{
 
-    public List<DiscordCommand> commands;
-    private static List<GatewayIntent> intents;
-    private static Map<UUID, Long> linkSession;
-    private static BidiMap<UUID, Long> minecraftDiscordMap;
+    public         List<DiscordCommand> commands;
+    private static List<GatewayIntent>  intents;
+    private static Map<UUID, Long>      linkSession;
+    private static BidiMap<UUID, Long>  minecraftDiscordMap;
 
-    static {
+    static
+    {
         intents = new ArrayList<>();
 
         intents.add(GatewayIntent.DIRECT_MESSAGES);
@@ -51,45 +53,54 @@ public class DiscordManager extends ListenerAdapter {
         //intents.add(GatewayIntent.GUILD_PRESENCES);
         //intents.add(GatewayIntent.GUILD_MEMBERS);
 
-        linkSession = new HashMap<>();
+        linkSession         = new HashMap<>();
         minecraftDiscordMap = new DualHashBidiMap<>();
     }
 
-    public JDA jda;
+    public  JDA        jda;
     private JavaPlugin plugin;
 
-    public DiscordManager(String token, JavaPlugin plugin) {
-        this.plugin = plugin;
+    public DiscordManager(String token, JavaPlugin plugin)
+    {
+        this.plugin   = plugin;
         this.commands = new ArrayList<>();
 
         this.commands.add(new CommandHelp(this.commands));
         this.commands.add(new CommandLink());
 
-        try {
+        try
+        {
             this.jda = JDABuilder.create(token, intents).setActivity(
                 EntityBuilder.createActivity("!help", null, Activity.ActivityType.DEFAULT)
             ).disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS).build();
-        } catch (LoginException e) {
+        }
+        catch (LoginException e)
+        {
             e.printStackTrace();
         }
     }
 
-    public void initialize() {
+    public void initialize()
+    {
         this.jda.addEventListener(this);
     }
 
-    public synchronized static UUID getMinecraftFromDiscord(Long id) {
+    public synchronized static UUID getMinecraftFromDiscord(Long id)
+    {
         return DiscordManager.minecraftDiscordMap.inverseBidiMap().get(id);
     }
 
-    public synchronized static Long getDiscordFromMinecraft(UUID uuid) {
+    public synchronized static Long getDiscordFromMinecraft(UUID uuid)
+    {
         return DiscordManager.minecraftDiscordMap.get(uuid);
     }
 
-    public synchronized static boolean link(UUID minecraftUUID, UUID linkSessionUUID) {
+    public synchronized static boolean link(UUID minecraftUUID, UUID linkSessionUUID)
+    {
         Long dID = DiscordManager.linkSession.get(linkSessionUUID);
 
-        if (dID == null) {
+        if (dID == null)
+        {
             return false;
         }
 
@@ -99,7 +110,8 @@ public class DiscordManager extends ListenerAdapter {
         return true;
     }
 
-    public synchronized static UUID createLinkSession(long id) {
+    public synchronized static UUID createLinkSession(long id)
+    {
         UUID uuid = UUID.randomUUID();
 
         DiscordManager.linkSession.put(uuid, id);
@@ -107,17 +119,22 @@ public class DiscordManager extends ListenerAdapter {
         return uuid;
     }
 
-    public synchronized static void putLink(UUID minecraftUUID, Long dID) {
+    public synchronized static void putLink(UUID minecraftUUID, Long dID)
+    {
         DiscordManager.minecraftDiscordMap.put(minecraftUUID, dID);
     }
 
-    public synchronized static Set<Map.Entry<UUID, Long>> getLinks() {
+    public synchronized static Set<Map.Entry<UUID, Long>> getLinks()
+    {
         return DiscordManager.minecraftDiscordMap.entrySet();
     }
 
-    private void handleCommand(String command, String[] args, MessageReceivedEvent receivedEvent) {
-        for (DiscordCommand discordCommand : this.commands) {
-            if (discordCommand.isCommand(command)) {
+    private void handleCommand(String command, String[] args, MessageReceivedEvent receivedEvent)
+    {
+        for (DiscordCommand discordCommand : this.commands)
+        {
+            if (discordCommand.isCommand(command))
+            {
                 discordCommand.onCommand(receivedEvent, args);
 
                 return;
@@ -125,7 +142,8 @@ public class DiscordManager extends ListenerAdapter {
         }
     }
 
-    public static String[] truncate(String[] strings) {
+    public static String[] truncate(String[] strings)
+    {
         String[] ret = new String[strings.length - 1];
 
         System.arraycopy(strings, 1, ret, 0, strings.length - 1);
@@ -134,14 +152,17 @@ public class DiscordManager extends ListenerAdapter {
     }
 
     @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
-        if (event.getAuthor().getIdLong() == this.jda.getSelfUser().getIdLong()) {
+    public void onMessageReceived(MessageReceivedEvent event)
+    {
+        if (event.getAuthor().getIdLong() == this.jda.getSelfUser().getIdLong())
+        {
             return;
         }
 
         String message = event.getMessage().getContentRaw();
 
-        if (message.startsWith("!")) {
+        if (message.startsWith("!"))
+        {
             String[] split = message.split(" ");
 
             System.out.println(event.getAuthor().getName() + ": " + message);
@@ -152,28 +173,36 @@ public class DiscordManager extends ListenerAdapter {
 
         List<Message.Attachment> attachments = event.getMessage().getAttachments();
 
-        if (!event.getChannelType().equals(ChannelType.PRIVATE) || attachments.size() != 1) {
+        if (!event.getChannelType().equals(ChannelType.PRIVATE) || attachments.size() != 1)
+        {
             return;
         }
 
         Message.Attachment attachment = attachments.get(0);
         ClipboardConverter converter;
 
-        if (attachment.getFileName().endsWith(".schematic")) {
+        if (attachment.getFileName().endsWith(".schematic"))
+        {
             converter = new SchemStreamToClipboard();
-        } else if (attachment.getFileName().endsWith(".png") || attachment.getFileName().endsWith(".jpg")) {
+        }
+        else if (attachment.getFileName().endsWith(".png") || attachment.getFileName().endsWith(".jpg"))
+        {
             converter = new PicStreamToClipboard(event.getMessage().getContentRaw());
-        } else {
+        }
+        else
+        {
             return;
         }
 
         this.handleUpload(event, attachment, converter);
     }
 
-    private void handleUpload(MessageReceivedEvent event, Message.Attachment attachment, ClipboardConverter converter) {
+    private void handleUpload(MessageReceivedEvent event, Message.Attachment attachment, ClipboardConverter converter)
+    {
         UUID playerUUID = DiscordManager.getMinecraftFromDiscord(event.getMessage().getAuthor().getIdLong());
 
-        if (playerUUID == null) {
+        if (playerUUID == null)
+        {
             event.getChannel().sendMessage("Link your Minecraft account using !link.").queue();
 
             return;
@@ -182,10 +211,14 @@ public class DiscordManager extends ListenerAdapter {
         attachment.retrieveInputStream().thenAccept(
             stream -> Bukkit.getScheduler().scheduleSyncDelayedTask(
                 this.plugin,
-                () -> {
-                    try {
+                () ->
+                {
+                    try
+                    {
                         this.loadClipboard(event, converter, stream, playerUUID);
-                    } catch (ClipboardException e) {
+                    }
+                    catch (ClipboardException e)
+                    {
                         event.getChannel().sendMessage(e.getMessage()).queue();
                     }
                 }
@@ -193,36 +226,47 @@ public class DiscordManager extends ListenerAdapter {
         );
     }
 
-    private void loadClipboard(MessageReceivedEvent event, ClipboardConverter converter, InputStream stream, UUID playerUUID) throws ClipboardException {
-        Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldEdit");
+    private void loadClipboard(
+        MessageReceivedEvent event, ClipboardConverter converter, InputStream stream, UUID playerUUID
+    ) throws ClipboardException
+    {
+        Plugin          plugin = Bukkit.getPluginManager().getPlugin("WorldEdit");
         WorldEditPlugin wep;
 
-        if (plugin instanceof WorldEditPlugin) {
+        if (plugin instanceof WorldEditPlugin)
+        {
             wep = (WorldEditPlugin) plugin;
-        } else {
+        }
+        else
+        {
             throw new ClipboardException("Invalid WorldEdit.");
         }
 
         Player player = Bukkit.getPlayer(playerUUID);
 
-        if (player == null) {
+        if (player == null)
+        {
             throw new ClipboardException("You are not online in Minecraft.");
         }
 
-        Clipboard clipboard = converter.getClipboard(stream);
-        LocalSession session = wep.getSession(player);
-        String dims = clipboard.getDimensions().toString();
+        Clipboard    clipboard = converter.getClipboard(stream);
+        LocalSession session   = wep.getSession(player);
+        String       dims      = clipboard.getDimensions().toString();
 
         session.setClipboard(new ClipboardHolder(clipboard));
         player.sendMessage(ChatColor.GREEN + "Loaded to clipboard. " + dims);
         event.getChannel().sendMessage("Loaded to clipboard. " + dims).queue();
 
-        if (converter instanceof PicStreamToClipboard) {
+        if (converter instanceof PicStreamToClipboard)
+        {
             event.getChannel().sendMessage("Size a picture by commenting (width) (height) when you upload.").queue();
         }
     }
 
-    public static MessageEmbed embed(String title, String description, MessageEmbed.ImageInfo imageInfo, List<MessageEmbed.Field> fields) {
+    public static MessageEmbed embed(
+        String title, String description, MessageEmbed.ImageInfo imageInfo, List<MessageEmbed.Field> fields
+    )
+    {
         return new MessageEmbed(
             null,
             title,
@@ -244,14 +288,17 @@ public class DiscordManager extends ListenerAdapter {
         );
     }
 
-    public static String inlineCodeBlock(String string) {
+    public static String inlineCodeBlock(String string)
+    {
         return "`" + string + "`";
     }
 
-    public static String inlineCodeBlock(String[] strings) {
+    public static String inlineCodeBlock(String[] strings)
+    {
         StringBuilder stringBuilder = new StringBuilder();
 
-        for (String str : strings) {
+        for (String str : strings)
+        {
             stringBuilder.append(inlineCodeBlock(str)).append(" ");
         }
 
