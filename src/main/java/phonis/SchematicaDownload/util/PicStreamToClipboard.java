@@ -98,6 +98,13 @@ public class PicStreamToClipboard implements ClipboardConverter
                 {
                     dither = false;
                 }
+                else if (dimensions[3].equalsIgnoreCase("dither"))
+                {
+                }
+                else
+                {
+                    throw new ClipboardException("Invalid algorithm.");
+                }
             }
         }
         else
